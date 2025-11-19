@@ -1,0 +1,14 @@
+name: "Alexa List Import"
+version: "1.0.0"
+slug: "alexa_list_import"
+description: "Imports Alexa shopping list into Home Assistant"
+startup: services
+init: false
+arch:
+  - amd64
+  - arm64
+ports: {}
+map: []
+options: {}
+schema: {}
+image: "local/alexa_list_import:latest"
