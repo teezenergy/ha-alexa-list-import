@@ -1,21 +1,15 @@
 name: "Alexa List Import"
 version: "1.0.3"
 slug: "alexa_list_import"
-description: "Imports Alexa shopping list into Home Assistant"
-url: "https://github.com/teezenergy/ha-alexa-list-import"
-startup: services
-boot: auto
-init: false
+description: "Imports Alexa shopping list into Home Assistant."
 arch:
-  - armhf
-  - armv7
-  - aarch64
   - amd64
+  - armv7
+  - armhf
+  - aarch64
   - i386
-ports: {}
-map:
-  - config:rw
-  - share:rw
+startup: application
+boot: auto
 options:
   amazon_email: ""
   amazon_password: ""
@@ -25,15 +19,12 @@ options:
   interval: 180
   clear_after_import: true
   debug: false
-  addon_version: "1.0.3"
-
 schema:
   amazon_email: str
   amazon_password: password
-  amazon_2fa: password
+  amazon_2fa: str
   region: str
-  webhook_url: str?
+  webhook_url: str
   interval: int
   clear_after_import: bool
   debug: bool
-  addon_version: str
