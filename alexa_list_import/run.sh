@@ -1,30 +1,20 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
+set -e
 
 echo "[run.sh] Alexa List Import starting..."
 
-# Version aus config.yaml laden
-VERSION=$(grep "^version:" /data/options.json 2>/dev/null | sed 's/.*: "//;s/"//')
-echo "[run.sh] Version: ${VERSION}"
+# Options aus HA
+CONFIG_PATH=/data/options.json
 
-echo "[run.sh] Reading options from /data/options.json"
-
-EMAIL=$(jq -r '.amazon_email' /data/options.json)
-PASSWORD="********"
-TFA=$(jq -r '.amazon_2fa' /data/options.json)
-REGION=$(jq -r '.region' /data/options.json)
-WEBHOOK=$(jq -r '.webhook_url' /data/options.json)
-INTERVAL=$(jq -r '.interval' /data/options.json)
-CLEAR=$(jq -r '.clear_after_import' /data/options.json)
-DEBUG=$(jq -r '.debug' /data/options.json)
-
-echo "[run.sh]   amazon_email= $EMAIL"
-echo "[run.sh]   amazon_password= ********"
-echo "[run.sh]   amazon_2fa= $TFA"
-echo "[run.sh]   region= $REGION"
-echo "[run.sh]   webhook_url= $WEBHOOK"
-echo "[run.sh]   interval= $INTERVAL"
-echo "[run.sh]   clear_after_import= $CLEAR"
-echo "[run.sh]   debug= $DEBUG"
+AMAZON_EMAIL=$(jq -r '.amazon_email' $CONFIG_PATH)
+AMAZON_PASSWORD=$(jq -r '.amazon_password' $CONFIG_PATH)
+AMAZON_2FA=$(jq -r '.amazon_2fa' $CONFIG_PATH)
+REGION=$(jq -r '.region' $CONFIG_PATH)
+WEBHOOK_URL=$(jq -r '.webhook_url' $CONFIG_PATH)
+INTERVAL=$(jq -r '.interval' $CONFIG_PATH)
+CLEAR_AFTER_IMPORT=$(jq -r '.clear_after_import' $CONFIG_PATH)
+DEBUG=$(jq -r '.debug' $CONFIG_PATH)
 
 echo "[run.sh] Starting app.py"
-python3 /app/app.py
+
+exec python3 /app/app.py
