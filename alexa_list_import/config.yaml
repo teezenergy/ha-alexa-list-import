@@ -1,6 +1,6 @@
 name: "Alexa List Import"
-version: "1.0.0"
-slug: "alexa_list_import"
+version: "1.0.4"
+slug: alexa_list_import
 description: "Imports Alexa shopping list into Home Assistant"
 url: "https://github.com/teezenergy/ha-alexa-list-import"
 startup: services
@@ -13,7 +13,6 @@ arch:
   - armhf
   - i386
 
-# Home Assistant baut das Add-on selbst aus deinem Dockerfile
 build_from:
   amd64: "Dockerfile"
   aarch64: "Dockerfile"
@@ -21,7 +20,22 @@ build_from:
   armhf: "Dockerfile"
   i386: "Dockerfile"
 
-ports: {}
-map: []
-options: {}
-schema: {}
+options:
+  amazon_email: ""
+  amazon_password: ""
+  amazon_2fa: ""
+  region: "de"
+  webhook_url: ""
+  interval: 180
+  clear_after_import: true
+  debug: false
+
+schema:
+  amazon_email: str
+  amazon_password: password
+  amazon_2fa: str
+  region: str
+  webhook_url: str
+  interval: int
+  clear_after_import: bool
+  debug: bool
