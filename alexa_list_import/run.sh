@@ -1,38 +1,56 @@
 #!/bin/sh
 set -eu
 
-CONFIG_PATH=/data/options.json
+echo "[run.sh] Using Python to load /data/options.json"
 
-echo "[run.sh] reading options from $CONFIG_PATH"
+# Read HA options using Python (no jq needed)
+OPTIONS=$(python3 - << 'EOF'
+import json
+import sys
 
-# Read options (jq must be available in the add-on; Home Assistant base images have it)
-EMAIL=$(jq -r '.amazon_email // ""' $CONFIG_PATH)
-PASSWORD=$(jq -r '.amazon_password // ""' $CONFIG_PATH)
-TWOFA=$(jq -r '.amazon_2fa // ""' $CONFIG_PATH)
-REGION=$(jq -r '.amazon_region // "de"' $CONFIG_PATH)
-WEBHOOK=$(jq -r '.webhook_url // ""' $CONFIG_PATH)
-INTERVAL=$(jq -r '.polling_interval // 60' $CONFIG_PATH)
-CLEAR=$(jq -r '.clear_after_import // false' $CONFIG_PATH)
-MODE=$(jq -r '.mode // "daemon"' $CONFIG_PATH)  # "daemon" or "oneshot"
-DEBUG=$(jq -r '.debug // false' $CONFIG_PATH)
+try:
+    with open("/data/options.json") as f:
+        cfg = json.load(f)
+except:
+    print("ERROR: Could not read /data/options.json")
+    sys.exit(1)
+
+def get(k, default=""):
+    return str(cfg.get(k, default))
+
+print(
+    get("amazon_email"), "\n",
+    get("amazon_password"), "\n",
+    get("amazon_2fa"), "\n",
+    get("amazon_region", "de"), "\n",
+    get("webhook_url"), "\n",
+    get("polling_interval", "60"), "\n",
+    get("clear_after_import", "false"), "\n",
+    get("mode", "daemon"), "\n",
+    get("debug", "false")
+)
+EOF
+)
+
+EMAIL=$(echo "$OPTIONS" | sed -n 1p)
+PASSWORD=$(echo "$OPTIONS" | sed -n 2p)
+TWOFA=$(echo "$OPTIONS" | sed -n 3p)
+REGION=$(echo "$OPTIONS" | sed -n 4p)
+WEBHOOK=$(echo "$OPTIONS" | sed -n 5p)
+INTERVAL=$(echo "$OPTIONS" | sed -n 6p)
+CLEAR=$(echo "$OPTIONS" | sed -n 7p)
+MODE=$(echo "$OPTIONS" | sed -n 8p)
+DEBUG=$(echo "$OPTIONS" | sed -n 9p)
 
 echo "[run.sh] mode=$MODE debug=$DEBUG region=$REGION interval=${INTERVAL}s clear_after_import=$CLEAR"
-if [ -z "$EMAIL" ] || [ -z "$PASSWORD" ]; then
-  echo "[run.sh] ERROR: amazon_email or amazon_password is empty. Please set them in the add-on options."
-  exit 1
-fi
 
-cmd="python3 /app/app.py \
-  --email \"$EMAIL\" \
-  --password \"$PASSWORD\" \
-  --twofa \"$TWOFA\" \
-  --region \"$REGION\" \
-  --webhook \"$WEBHOOK\" \
-  --interval $INTERVAL \
-  --clear $CLEAR \
-  --mode $MODE \
-  --debug $DEBUG"
-
-echo "[run.sh] executing: $cmd"
-# exec preserves signals
-eval exec $cmd
+exec python3 /app/app.py \
+    --email "$EMAIL" \
+    --password "$PASSWORD" \
+    --twofa "$TWOFA" \
+    --region "$REGION" \
+    --webhook "$WEBHOOK" \
+    --interval "$INTERVAL" \
+    --clear "$CLEAR" \
+    --mode "$MODE" \
+    --debug "$DEBUG"
