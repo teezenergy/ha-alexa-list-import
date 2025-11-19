@@ -2,24 +2,28 @@
 set -e
 
 echo "[run.sh] Alexa List Import starting..."
-
 OPTIONS_FILE=/data/options.json
-
 echo "[run.sh] Reading options from $OPTIONS_FILE"
 
-# Use Python to parse the JSON options
-cat << 'EOF' > /app/options_loader.py
-import json, os
+# Use Python to parse JSON → erzeugt garantiert KEINE LEERZEICHEN
+cat << 'EOF' > /app/load_options.py
+import json
 
 data = json.load(open("/data/options.json"))
 
-for k, v in data.items():
-    print(f"{k}={v}")
+def clean(x):
+    if isinstance(x, str):
+        return x.strip().replace(" ", "")
+    return x
+
+for key, val in data.items():
+    v = clean(val)
+    print(f"{key}={v}")
 EOF
 
-python3 /app/options_loader.py > /data/options.env
+python3 /app/load_options.py > /data/options.env
 
-# Load variables
+# Environment übernehmen
 set -a
 . /data/options.env
 set +a
