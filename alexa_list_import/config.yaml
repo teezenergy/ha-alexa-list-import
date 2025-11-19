@@ -16,4 +16,3 @@ ports: {}
 map: []
 options: {}
 schema: {}
-image: "ghcr.io/teezenergy/alexa_list_import:latest"
