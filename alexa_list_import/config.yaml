@@ -5,6 +5,7 @@ version: "1.0.4"
 startup: services
 boot: auto
 host_network: true
+
 options:
   amazon_email: ""
   amazon_password: ""
@@ -14,6 +15,7 @@ options:
   interval: 180
   clear_after_import: true
   debug: false
+
 schema:
   amazon_email: str
   amazon_password: password
@@ -23,3 +25,5 @@ schema:
   interval: int
   clear_after_import: bool
   debug: bool
+
+image: "local/alexa_list_import"
