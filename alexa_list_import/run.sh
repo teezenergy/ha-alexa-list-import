@@ -1,34 +1,68 @@
 #!/usr/bin/env bash
+set -e
 
 echo "[run.sh] Alexa List Import starting..."
 
-# Read version from config.yaml
-ADDON_VERSION=$(grep -R "version:" /etc/hassio/addons/data/*/config.yaml 2>/dev/null | head -n1 | awk '{print $2}')
-echo "[run.sh] Version: ${ADDON_VERSION}"
+# Version aus config.yaml holen
+VERSION=$(grep -E "^version:" /etc/hassio/addons/data/*/config.yaml | awk '{print $2}' || true)
+echo "[run.sh] Version: $VERSION"
 
 echo "[run.sh] Reading options from /data/options.json"
 
-EMAIL=$(jq -r '.amazon_email' /data/options.json)
-PASSWORD="********"
-TWOFA=$(jq -r '.amazon_2fa' /data/options.json)
-REGION=$(jq -r '.region' /data/options.json)
-WEBHOOK=$(jq -r '.webhook_url' /data/options.json)
-INTERVAL=$(jq -r '.interval' /data/options.json)
-CLEAR=$(jq -r '.clear_after_import' /data/options.json)
-DEBUG=$(jq -r '.debug' /data/options.json)
+# Python verwenden, falls jq fehlt (bei dir war jq nicht vorhanden)
+eval "$(python3 << 'EOF'
+import json
+opts = json.load(open('/data/options.json'))
+for k, v in opts.items():
+    if k == "amazon_password":
+        print(f'{k}= ********')
+    else:
+        print(f'{k}= {v}')
+EOF
+)"
 
-echo "[run.sh]   amazon_email= $EMAIL"
-echo "[run.sh]   amazon_password= ********"
-echo "[run.sh]   amazon_2fa= $TWOFA"
-echo "[run.sh]   region= $REGION"
-echo "[run.sh]   webhook_url= $WEBHOOK"
-echo "[run.sh]   interval= $INTERVAL"
-echo "[run.sh]   clear_after_import= $CLEAR"
-echo "[run.sh]   debug= $DEBUG"
-echo "[run.sh]   addon_version= $ADDON_VERSION"
+# Optionen für app.py übergeben
+export AMAZON_EMAIL=$(python3 - <<EOF
+import json; print(json.load(open('/data/options.json'))["amazon_email"])
+EOF
+)
+
+export AMAZON_PASSWORD=$(python3 - <<EOF
+import json; print(json.load(open('/data/options.json'))["amazon_password"])
+EOF
+)
+
+export AMAZON_2FA=$(python3 - <<EOF
+import json; print(json.load(open('/data/options.json'))["amazon_2fa"])
+EOF
+)
+
+export REGION=$(python3 - <<EOF
+import json; print(json.load(open('/data/options.json'))["region"])
+EOF
+)
+
+export WEBHOOK=$(python3 - <<EOF
+import json; print(json.load(open('/data/options.json'))["webhook_url"])
+EOF
+)
+
+export INTERVAL=$(python3 - <<EOF
+import json; print(json.load(open('/data/options.json'))["interval"])
+EOF
+)
+
+export CLEAR=$(python3 - <<EOF
+import json; print(json.load(open('/data/options.json'))["clear_after_import"])
+EOF
+)
+
+export DEBUG=$(python3 - <<EOF
+import json; print(json.load(open('/data/options.json'))["debug"])
+EOF
+)
+
+export ADDON_VERSION=$VERSION
 
 echo "[run.sh] Starting app.py"
-
-export ADDON_VERSION
-
 python3 /app/app.py
