@@ -1,8 +1,6 @@
 import time
 import requests
-import json
 import yaml
-import os
 
 OPTIONS_FILE = "/data/options.json"
 
@@ -25,13 +23,9 @@ def main():
     log(f"Running Alexa Importer (region={region}, interval={interval}s)")
 
     while True:
-        log("Polling Alexa list (dummy example)…")
+        log("Polling Alexa list… (Dummy)")
 
-        # Dummy list
         items = ["Test 1", "Test 2"]
-
-        if debug:
-            log(f"Items fetched: {items}")
 
         if webhook:
             requests.post(webhook, json={"items": items})
