@@ -1,62 +1,54 @@
-import os
 import time
 import requests
+import json
+import yaml
 
-print("Alexa List Import Add-on started!")
-print(f"[INFO] Add-on Version: {os.getenv('ADDON_VERSION')}")
+from flask import Flask
 
-DEBUG = os.getenv("DEBUG", "false").lower() == "true"
+app = Flask(__name__)
+
+with open("/data/options.json", "r") as f:
+    options = json.load(f)
+
+EMAIL = options["amazon_email"]
+PASSWORD = options["amazon_password"]
+TWOFA = options["amazon_2fa"]
+REGION = options["region"]
+WEBHOOK = options["webhook_url"]
+INTERVAL = int(options["interval"])
+CLEAR = options["clear_after_import"]
+DEBUG = options["debug"]
 
 def log(msg):
     if DEBUG:
         print(f"[DEBUG] {msg}")
 
-EMAIL = os.getenv("AMAZON_EMAIL")
-PASSWORD = os.getenv("AMAZON_PASSWORD")
-TFA = os.getenv("AMAZON_2FA")
-REGION = os.getenv("REGION", "de")
-WEBHOOK = os.getenv("WEBHOOK")
-INTERVAL = int(os.getenv("INTERVAL", "180"))
-CLEAR = os.getenv("CLEAR", "false").lower() == "true"
+def get_items():
+    """Fake test data — hier kannst du später echten Alexa API Code einfügen."""
+    return ["Milch", "Butter", "Käse"]
 
-log(f"Email: {EMAIL}")
-log("Password: ********")
-log(f"2FA: {TFA}")
-log(f"Region: {REGION}")
-log(f"Interval: {INTERVAL}")
-log(f"Webhook: {WEBHOOK}")
-log(f"Clear after import: {CLEAR}")
+def clear_items():
+    log("Alexa Liste gelöscht.")
 
-def login():
-    log("Login check…")
-    try:
-        r = requests.get(f"https://www.amazon.{REGION}")
-        log(f"Amazon response: {r.status_code}")
-        return True
-    except Exception as e:
-        log(f"Login error: {e}")
-        return False
+def send_to_webhook(items):
+    payload = {"items": items}
+    r = requests.post(WEBHOOK, json=payload)
+    log(f"Webhook Antwort: {r.text}")
 
-def fetch_items():
-    return []
+@app.route("/")
+def root():
+    return "Alexa Import läuft"
 
-def send_webhook(items):
-    if not WEBHOOK:
-        log("No webhook URL configured.")
-        return
-    try:
-        log(f"Sending {len(items)} items to webhook")
-        requests.post(WEBHOOK, json={"items": items})
-    except Exception as e:
-        log(f"Webhook error: {e}")
+if __name__ == "__main__":
+    log("Addon gestartet und aktiv.")
+    while True:
+        items = get_items()
 
-if login():
-    log("Login OK")
-else:
-    log("Login FAILED")
+        if items:
+            log(f"Gefundene Items: {items}")
+            send_to_webhook(items)
 
-while True:
-    print(f"[INFO] Polling — Add-on Version {os.getenv('ADDON_VERSION')}")
-    items = fetch_items()
-    send_webhook(items)
-    time.sleep(INTERVAL)
+            if CLEAR:
+                clear_items()
+
+        time.sleep(INTERVAL)
