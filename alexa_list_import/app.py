@@ -2,53 +2,41 @@ import time
 import requests
 import json
 import yaml
+import os
 
-from flask import Flask
+OPTIONS_FILE = "/data/options.json"
 
-app = Flask(__name__)
-
-with open("/data/options.json", "r") as f:
-    options = json.load(f)
-
-EMAIL = options["amazon_email"]
-PASSWORD = options["amazon_password"]
-TWOFA = options["amazon_2fa"]
-REGION = options["region"]
-WEBHOOK = options["webhook_url"]
-INTERVAL = int(options["interval"])
-CLEAR = options["clear_after_import"]
-DEBUG = options["debug"]
+def load_options():
+    with open(OPTIONS_FILE, "r") as f:
+        return yaml.safe_load(f)
 
 def log(msg):
-    if DEBUG:
-        print(f"[DEBUG] {msg}")
+    print(f"[APP] {msg}", flush=True)
 
-def get_items():
-    """Fake test data — hier kannst du später echten Alexa API Code einfügen."""
-    return ["Milch", "Butter", "Käse"]
+def main():
+    opts = load_options()
 
-def clear_items():
-    log("Alexa Liste gelöscht.")
+    region = opts.get("region", "de")
+    interval = int(opts.get("interval", 180))
+    webhook = opts.get("webhook_url")
+    clear_after = opts.get("clear_after_import", True)
+    debug = opts.get("debug", False)
 
-def send_to_webhook(items):
-    payload = {"items": items}
-    r = requests.post(WEBHOOK, json=payload)
-    log(f"Webhook Antwort: {r.text}")
+    log(f"Running Alexa Importer (region={region}, interval={interval}s)")
 
-@app.route("/")
-def root():
-    return "Alexa Import läuft"
+    while True:
+        log("Polling Alexa list (dummy example)…")
+
+        # Dummy list
+        items = ["Test 1", "Test 2"]
+
+        if debug:
+            log(f"Items fetched: {items}")
+
+        if webhook:
+            requests.post(webhook, json={"items": items})
+
+        time.sleep(interval)
 
 if __name__ == "__main__":
-    log("Addon gestartet und aktiv.")
-    while True:
-        items = get_items()
-
-        if items:
-            log(f"Gefundene Items: {items}")
-            send_to_webhook(items)
-
-            if CLEAR:
-                clear_items()
-
-        time.sleep(INTERVAL)
+    main()
