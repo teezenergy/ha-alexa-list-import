@@ -1,14 +1,19 @@
 FROM python:3.12-alpine
 
-RUN apk add --no-cache bash jq
+RUN apk add --no-cache bash curl jq
 
-WORKDIR /app
+# Python dependencies
+RUN pip install --no-cache-dir \
+    requests \
+    pyyaml \
+    flask \
+    boto3
 
-COPY app.py /app/app.py
 COPY run.sh /app/run.sh
-
-RUN pip install requests
+COPY app.py /app/app.py
 
 RUN chmod +x /app/run.sh
+
+WORKDIR /app
 
 CMD ["/app/run.sh"]
