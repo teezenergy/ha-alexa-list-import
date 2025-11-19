@@ -1,12 +1,10 @@
 name: "Alexa List Import"
-version: "1.0.0"
+version: "1.0.4"
 slug: "alexa_list_import"
-description: "Imports Alexa shopping list into Home Assistant via webhook."
-arch:
-  - amd64
-  - aarch64
-startup: application
+description: "Importiert die Alexa Einkaufsliste automatisch in Home Assistant"
+startup: services
 boot: auto
+host_network: false
 options:
   amazon_email: ""
   amazon_password: ""
@@ -15,11 +13,11 @@ options:
   webhook_url: ""
   interval: 180
   clear_after_import: true
-  debug: true
+  debug: false
 schema:
   amazon_email: str
   amazon_password: password
-  amazon_2fa: str
+  amazon_2fa: password
   region: str
   webhook_url: str
   interval: int
