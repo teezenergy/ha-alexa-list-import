@@ -1,32 +1,82 @@
-import time
-import yaml
-import json
-import requests
 import os
+import time
+import requests
+
+print("Alexa List Import Add-on started!")
+print(f"[DEBUG] Add-on Version: {os.getenv('ADDON_VERSION')}")
+
+DEBUG = os.getenv("DEBUG", "false").lower() == "true"
 
 def log(msg):
-    print(f"[app.py] {msg}", flush=True)
+    if DEBUG:
+        print(f"[DEBUG] {msg}")
 
-def load_settings():
-    with open("/data/options.json", "r") as f:
-        return json.load(f)
+# Eingaben laden
+EMAIL = os.getenv("AMAZON_EMAIL")
+PASSWORD = os.getenv("AMAZON_PASSWORD")
+TFA = os.getenv("AMAZON_2FA")
+REGION = os.getenv("REGION", "de")
+WEBHOOK = os.getenv("WEBHOOK")
+INTERVAL = int(os.getenv("INTERVAL", "180"))
+CLEAR = os.getenv("CLEAR", "false").lower() == "true"
 
-def main():
-    version = os.getenv("ADDON_VERSION", "unknown")
-    log(f"Starting Alexa List Import Add-on v{version}")
+log(f"Email: {EMAIL}")
+log("Password: ******** (hidden)")
+log(f"2FA: {TFA}")
+log(f"Region: {REGION}")
+log(f"Interval: {INTERVAL}")
+log(f"Webhook: {WEBHOOK}")
+log(f"Clear after import: {CLEAR}")
 
-    cfg = load_settings()
-    interval = int(cfg.get("interval", 180))
+# Fake Login-System
+def login():
+    log("Starting login flow…")
+    log(f"Preparing request to https://www.amazon.{REGION}/ap/signin")
 
-    while True:
-        log(f"Polling Alexa (Add-on v{version}) ...")
+    try:
+        # Fake-Login, denn Amazon blockt diese Requests sowieso
+        r = requests.get(f"https://www.amazon.{REGION}")
+        log(f"Login HTTP status: {r.status_code}")
+        return r.status_code == 200
+    except Exception as e:
+        log(f"Login error: {e}")
+        return False
 
-        # --- Hier würdest du den Alexa-API-Aufruf machen ---
-        # Dummy print:
-        log("Importing Alexa shopping list...")
+# Fake List-Fetcher
+def fetch_items():
+    log("Fetching shopping list...")
+    # Wir simulieren leere Liste, bis echte API implementiert wird
+    return []
 
-        time.sleep(interval)
+def send_webhook(items):
+    if not WEBHOOK:
+        log("No webhook provided.")
+        return
 
+    log(f"Sending {len(items)} items to webhook...")
 
-if __name__ == "__main__":
-    main()
+    try:
+        requests.post(WEBHOOK, json={"items": items})
+    except Exception as e:
+        log(f"Webhook error: {e}")
+
+# Main Loop
+if not login():
+    log("Login failed.")
+else:
+    log("Login OK")
+
+while True:
+    print(f"[INFO] Polling — Add-on Version {os.getenv('ADDON_VERSION')}")
+    log("Polling loop iteration")
+
+    items = fetch_items()
+    log(f"Fetched {len(items)} items.")
+
+    send_webhook(items)
+
+    if CLEAR:
+        log("Clearing imported items (not implemented).")
+
+    log(f"Sleeping for {INTERVAL} seconds…")
+    time.sleep(INTERVAL)
