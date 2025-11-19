@@ -1,7 +1,7 @@
 name: "Alexa List Import"
 version: "1.0.0"
 slug: "alexa_list_import"
-description: "Imports Alexa shopping list into Home Assistant"
+description: "Imports Amazon Alexa shopping list into Home Assistant"
 url: "https://github.com/teezenergy/ha-alexa-list-import"
 startup: services
 boot: auto
