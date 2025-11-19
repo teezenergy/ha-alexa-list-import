@@ -1,73 +1,32 @@
-import json
 import time
+import yaml
+import json
 import requests
 import os
 
-# -------------------------------
-# Version aus options.json
-# -------------------------------
-def get_addon_version():
-    try:
-        with open("/data/options.json") as f:
-            opts = json.load(f)
-        return opts.get("addon_version", "1.0.0")
-    except:
-        return "1.0.0"
-
-ADDON_VERSION = get_addon_version()
-print(f"[app.py] Alexa List Import Add-on started (version {ADDON_VERSION})")
-
-# -------------------------------
-# Optionen laden
-# -------------------------------
-with open("/data/options.json", "r") as f:
-    options = json.load(f)
-
-EMAIL = options.get("amazon_email")
-PASSWORD = options.get("amazon_password")
-TWOFA = options.get("amazon_2fa")
-REGION = options.get("region", "de")
-WEBHOOK = options.get("webhook_url", "")
-INTERVAL = int(options.get("interval", 180))
-CLEAR = bool(options.get("clear_after_import", True))
-DEBUG = bool(options.get("debug", False))
-
 def log(msg):
-    print(f"[DEBUG v{ADDON_VERSION}] {msg}")
+    print(f"[app.py] {msg}", flush=True)
 
-log("Add-on options loaded (password hidden)")
+def load_settings():
+    with open("/data/options.json", "r") as f:
+        return json.load(f)
 
-# -------------------------------
-# Placeholder Login
-# -------------------------------
-def amazon_login():
-    log("Login attempt (placeholder logic)")
-    return True
+def main():
+    version = os.getenv("ADDON_VERSION", "unknown")
+    log(f"Starting Alexa List Import Add-on v{version}")
 
-# -------------------------------
-# Placeholder List Fetch
-# -------------------------------
-def fetch_shopping():
-    log("Fetching shopping list (placeholder logic)")
-    return []
+    cfg = load_settings()
+    interval = int(cfg.get("interval", 180))
 
-# -------------------------------
-# Main Loop
-# -------------------------------
-if amazon_login():
-    log("Login successful")
-else:
-    log("Login failed")
+    while True:
+        log(f"Polling Alexa (Add-on v{version}) ...")
 
-while True:
-    log("Polling iteration started")
-    log(f"Add-on Version: {ADDON_VERSION}")
+        # --- Hier würdest du den Alexa-API-Aufruf machen ---
+        # Dummy print:
+        log("Importing Alexa shopping list...")
 
-    items = fetch_shopping()
-    log(f"Fetched {len(items)} items")
+        time.sleep(interval)
 
-    if CLEAR:
-        log("Clear after import = True")
 
-    log(f"Sleeping {INTERVAL} seconds")
-    time.sleep(INTERVAL)
+if __name__ == "__main__":
+    main()
