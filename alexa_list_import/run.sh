@@ -1,38 +1,33 @@
-#!/bin/sh
-set -e
+#!/usr/bin/env sh
 
 echo "[run.sh] Alexa List Import starting..."
-OPTIONS_FILE=/data/options.json
-echo "[run.sh] Reading options from $OPTIONS_FILE"
 
-# Use Python to parse JSON → erzeugt garantiert KEINE LEERZEICHEN
-cat << 'EOF' > /app/load_options.py
+# Dynamisch Version aus config.yaml lesen
+ADDON_VERSION=$(grep '^version:' /etc/hassio/addons/data/*/config.yaml | head -n 1 | awk '{print $2}' | tr -d '"')
+
+echo "[run.sh] Version: ${ADDON_VERSION}"
+
+echo "[run.sh] Reading options from /data/options.json"
+
+# options.json laden
+python3 - << 'EOF'
 import json
+import sys
 
-data = json.load(open("/data/options.json"))
+try:
+    with open("/data/options.json", "r") as f:
+        opts = json.load(f)
+except Exception as e:
+    print("[run.sh] ERROR reading options.json:", e)
+    sys.exit(1)
 
-def clean(x):
-    if isinstance(x, str):
-        return x.strip().replace(" ", "")
-    return x
+for k, v in opts.items():
+    if "password" in k:
+        print(f"[run.sh]   {k}= ********")
+    else:
+        print(f"[run.sh]   {k}= {v}")
 
-for key, val in data.items():
-    v = clean(val)
-    print(f"{key}={v}")
 EOF
-
-python3 /app/load_options.py > /data/options.env
-
-# Environment übernehmen
-set -a
-. /data/options.env
-set +a
-
-echo "[run.sh] Options loaded:"
-echo "  region=$region"
-echo "  interval=$interval"
-echo "  clear_after_import=$clear_after_import"
-echo "  debug=$debug"
 
 echo "[run.sh] Starting app.py"
 exec python3 /app/app.py
