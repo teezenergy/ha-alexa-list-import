@@ -1,56 +1,30 @@
-#!/bin/sh
-set -eu
+#!/usr/bin/env bash
+set -e
 
-echo "[run.sh] Using Python to load /data/options.json"
+echo "[run.sh] Alexa List Import starting..."
 
-# Read HA options using Python (no jq needed)
-OPTIONS=$(python3 - << 'EOF'
-import json
-import sys
+# Options
+OPTIONS_FILE=/data/options.json
 
-try:
-    with open("/data/options.json") as f:
-        cfg = json.load(f)
-except:
-    print("ERROR: Could not read /data/options.json")
-    sys.exit(1)
+echo "[run.sh] Reading options from $OPTIONS_FILE"
 
-def get(k, default=""):
-    return str(cfg.get(k, default))
-
-print(
-    get("amazon_email"), "\n",
-    get("amazon_password"), "\n",
-    get("amazon_2fa"), "\n",
-    get("amazon_region", "de"), "\n",
-    get("webhook_url"), "\n",
-    get("polling_interval", "60"), "\n",
-    get("clear_after_import", "false"), "\n",
-    get("mode", "daemon"), "\n",
-    get("debug", "false")
-)
+# Let Python parse JSON instead of jq (not available)
+cat <<EOF > /app/options_loader.py
+import json, sys
+data = json.load(open("/data/options.json"))
+for k, v in data.items():
+    print(f"{k}={v}")
 EOF
-)
 
-EMAIL=$(echo "$OPTIONS" | sed -n 1p)
-PASSWORD=$(echo "$OPTIONS" | sed -n 2p)
-TWOFA=$(echo "$OPTIONS" | sed -n 3p)
-REGION=$(echo "$OPTIONS" | sed -n 4p)
-WEBHOOK=$(echo "$OPTIONS" | sed -n 5p)
-INTERVAL=$(echo "$OPTIONS" | sed -n 6p)
-CLEAR=$(echo "$OPTIONS" | sed -n 7p)
-MODE=$(echo "$OPTIONS" | sed -n 8p)
-DEBUG=$(echo "$OPTIONS" | sed -n 9p)
+python3 /app/options_loader.py > /data/options.env
 
-echo "[run.sh] mode=$MODE debug=$DEBUG region=$REGION interval=${INTERVAL}s clear_after_import=$CLEAR"
+# Source the env file
+set -a
+source /data/options.env
+set +a
 
-exec python3 /app/app.py \
-    --email "$EMAIL" \
-    --password "$PASSWORD" \
-    --twofa "$TWOFA" \
-    --region "$REGION" \
-    --webhook "$WEBHOOK" \
-    --interval "$INTERVAL" \
-    --clear "$CLEAR" \
-    --mode "$MODE" \
-    --debug "$DEBUG"
+echo "[run.sh] Options loaded:"
+echo "  region=$region  interval=$interval clear_after_import=$clear_after_import"
+
+echo "[run.sh] Starting app.py"
+exec python3 /app/app.py
