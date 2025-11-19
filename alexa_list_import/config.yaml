@@ -1,5 +1,5 @@
 name: "Alexa List Import"
-version: "1.0.2"
+version: "1.0.3"
 slug: "alexa_list_import"
 description: "Imports Alexa shopping list into Home Assistant"
 url: "https://github.com/teezenergy/ha-alexa-list-import"
@@ -25,6 +25,7 @@ options:
   interval: 180
   clear_after_import: true
   debug: false
+  addon_version: "1.0.3"
 
 schema:
   amazon_email: str
@@ -35,3 +36,4 @@ schema:
   interval: int
   clear_after_import: bool
   debug: bool
+  addon_version: str
