@@ -1,8 +1,11 @@
 name: "Alexa List Import"
-version: "1.0.1"
+version: "1.0.2"
 slug: "alexa_list_import"
 description: "Imports Alexa shopping list into Home Assistant"
 url: "https://github.com/teezenergy/ha-alexa-list-import"
+startup: services
+boot: auto
+init: false
 arch:
   - amd64
   - aarch64
@@ -10,26 +13,14 @@ arch:
   - armhf
   - i386
 
-startup: services
-boot: auto
-init: false
+build_from:
+  amd64: "Dockerfile"
+  aarch64: "Dockerfile"
+  armv7: "Dockerfile"
+  armhf: "Dockerfile"
+  i386: "Dockerfile"
 
-options:
-  amazon_email: ""
-  amazon_password: ""
-  amazon_2fa: ""
-  region: "de"
-  webhook_url: ""
-  interval: 180
-  clear_after_import: true
-  debug: false
-
-schema:
-  amazon_email: str
-  amazon_password: password
-  amazon_2fa: str
-  region: str
-  webhook_url: str
-  interval: int
-  clear_after_import: bool
-  debug: bool
+ports: {}
+map: []
+options: {}
+schema: {}
