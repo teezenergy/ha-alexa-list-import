@@ -1,15 +1,25 @@
-FROM python:3.12-alpine
+FROM python:3.11-slim
 
+# Arbeitsverzeichnis
 WORKDIR /app
 
-RUN apk add --no-cache bash curl jq
+# System-Python Dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        gcc \
+        python3-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt /app/
+# Python Dependencies
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY run.sh /app/run.sh
+# App Dateien
+COPY app.py .
+COPY run.sh .
+
+# run.sh ausführbar machen
 RUN chmod +x /app/run.sh
 
-COPY app.py /app/app.py
-
-CMD ["/app/run.sh"]
+CMD [ "/app/run.sh" ]
