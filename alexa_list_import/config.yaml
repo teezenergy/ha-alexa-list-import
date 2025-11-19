@@ -1,5 +1,5 @@
 name: "Alexa List Import"
-slug: alexa-list-import
+slug: alexa_list_import
 description: "Importiert Alexa Einkaufslisten automatisch in Home Assistant"
 version: "1.0.4"
 startup: services
@@ -25,3 +25,5 @@ schema:
   interval: int
   clear_after_import: bool
   debug: bool
+
+image: "local/alexa_list_import"
