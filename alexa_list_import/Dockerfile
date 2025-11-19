@@ -1,6 +1,6 @@
 FROM python:3.12-alpine
 
-RUN apk add --no-cache bash jq py3-yaml
+RUN apk add --no-cache bash jq
 
 WORKDIR /app
 
