@@ -1,22 +1,21 @@
 FROM python:3.11-slim
 
-WORKDIR /app
-
-# Install system packages
+# Update system + install jq
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends jq && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get install -y jq && \
+    apt-get clean
 
-# Copy Python dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Copy files
+COPY run.sh /app/run.sh
+COPY app.py /app/app.py
+COPY requirements.txt /app/requirements.txt
 
-# Copy app
-COPY app.py .
-COPY run.sh .
+# Install python libs
+RUN pip install --no-cache-dir -r /app/requirements.txt
 
-# Ensure run.sh is executable
+# Make script executable
 RUN chmod +x /app/run.sh
 
-CMD [ "/app/run.sh" ]
+WORKDIR /app
+
+CMD ["/app/run.sh"]
