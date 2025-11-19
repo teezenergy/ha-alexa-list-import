@@ -2,13 +2,18 @@ name: "Alexa List Import"
 version: "1.0.0"
 slug: "alexa_list_import"
 description: "Imports Alexa shopping list into Home Assistant"
+url: "https://github.com/teezenergy/ha-alexa-list-import"
 startup: services
+boot: auto
 init: false
 arch:
+  - armhf
+  - armv7
+  - aarch64
   - amd64
-  - arm64
+  - i386
 ports: {}
 map: []
 options: {}
 schema: {}
-image: "local/alexa_list_import:latest"
+image: "ghcr.io/teezenergy/alexa_list_import:latest"
