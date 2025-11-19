@@ -1,17 +1,18 @@
 name: "Alexa List Import"
-version: "1.0.0"
+version: "1.0.1"
 slug: "alexa_list_import"
 description: "Imports Alexa shopping list into Home Assistant"
 url: "https://github.com/teezenergy/ha-alexa-list-import"
-startup: services
-boot: auto
-init: false
 arch:
   - amd64
   - aarch64
   - armv7
   - armhf
   - i386
+
+startup: services
+boot: auto
+init: false
 
 options:
   amazon_email: ""
