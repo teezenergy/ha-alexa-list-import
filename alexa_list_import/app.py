@@ -2,18 +2,17 @@ import json
 import time
 import requests
 import os
-import yaml
 
 # -------------------------------
-# Version aus config.yaml laden
+# Version aus options.json
 # -------------------------------
 def get_addon_version():
     try:
-        with open("/etc/hassio/addons/data/" + os.listdir("/etc/hassio/addons/data/")[0] + "/config.yaml", "r") as f:
-            cfg = yaml.safe_load(f)
-        return cfg.get("version", "unknown")
+        with open("/data/options.json") as f:
+            opts = json.load(f)
+        return opts.get("addon_version", "1.0.0")
     except:
-        return "unknown"
+        return "1.0.0"
 
 ADDON_VERSION = get_addon_version()
 print(f"[app.py] Alexa List Import Add-on started (version {ADDON_VERSION})")
@@ -39,18 +38,15 @@ def log(msg):
 log("Add-on options loaded (password hidden)")
 
 # -------------------------------
-# Platzhalter Login
+# Placeholder Login
 # -------------------------------
-
 def amazon_login():
     log("Login attempt (placeholder logic)")
-    # echtes Login folgt später
     return True
 
 # -------------------------------
-# Platzhalter Shopping-List Fetch
+# Placeholder List Fetch
 # -------------------------------
-
 def fetch_shopping():
     log("Fetching shopping list (placeholder logic)")
     return []
@@ -58,9 +54,8 @@ def fetch_shopping():
 # -------------------------------
 # Main Loop
 # -------------------------------
-
 if amazon_login():
-    log("Login successful (placeholder)")
+    log("Login successful")
 else:
     log("Login failed")
 
