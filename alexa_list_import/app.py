@@ -3,7 +3,7 @@ import time
 import requests
 
 print("Alexa List Import Add-on started!")
-print(f"[DEBUG] Add-on Version: {os.getenv('ADDON_VERSION')}")
+print(f"[INFO] Add-on Version: {os.getenv('ADDON_VERSION')}")
 
 DEBUG = os.getenv("DEBUG", "false").lower() == "true"
 
@@ -11,7 +11,6 @@ def log(msg):
     if DEBUG:
         print(f"[DEBUG] {msg}")
 
-# Eingaben laden
 EMAIL = os.getenv("AMAZON_EMAIL")
 PASSWORD = os.getenv("AMAZON_PASSWORD")
 TFA = os.getenv("AMAZON_2FA")
@@ -28,38 +27,36 @@ log(f"Interval: {INTERVAL}")
 log(f"Webhook: {WEBHOOK}")
 log(f"Clear after import: {CLEAR}")
 
-# Fake Login
 def login():
-    log("Starting login flow…")
+    log("Login check…")
     try:
         r = requests.get(f"https://www.amazon.{REGION}")
-        log(f"Login status: {r.status_code}")
+        log(f"Amazon response: {r.status_code}")
         return True
     except Exception as e:
         log(f"Login error: {e}")
         return False
 
 def fetch_items():
-    log("Fetching list…")
     return []
 
 def send_webhook(items):
     if not WEBHOOK:
-        log("Webhook missing.")
+        log("No webhook URL configured.")
         return
-    log(f"Sending {len(items)} items to webhook.")
     try:
+        log(f"Sending {len(items)} items to webhook")
         requests.post(WEBHOOK, json={"items": items})
     except Exception as e:
         log(f"Webhook error: {e}")
 
-if not login():
-    log("Login failed.")
+if login():
+    log("Login OK")
 else:
-    log("Login OK.")
+    log("Login FAILED")
 
 while True:
-    print(f"[INFO] Polling — Version {os.getenv('ADDON_VERSION')}")
+    print(f"[INFO] Polling — Add-on Version {os.getenv('ADDON_VERSION')}")
     items = fetch_items()
     send_webhook(items)
     time.sleep(INTERVAL)
