@@ -1,36 +1,47 @@
+import os
 import time
-import requests
-import yaml
+import json
+import urllib.request
 
-OPTIONS_FILE = "/data/options.json"
+print("=== Alexa List Import Add-on ===")
+print(f"Version: {os.getenv('ADDON_VERSION')}")
+print("Starting...")
 
-def load_options():
-    with open(OPTIONS_FILE, "r") as f:
-        return yaml.safe_load(f)
+def debug(msg):
+    if os.getenv("DEBUG", "false").lower() == "true":
+        print("[DEBUG]", msg)
 
-def log(msg):
-    print(f"[APP] {msg}", flush=True)
+def send_webhook(payload):
+    url = os.getenv("WEBHOOK_URL")
+    if not url:
+        print("[ERROR] Kein Webhook konfiguriert!")
+        return
+    
+    data = json.dumps(payload).encode("utf-8")
+    req = urllib.request.Request(url, data=data, headers={"Content-Type": "application/json"})
 
-def main():
-    opts = load_options()
+    try:
+        urllib.request.urlopen(req)
+        print("[INFO] Webhook gesendet.")
+    except Exception as e:
+        print("[ERROR] Webhook Fehler:", e)
 
-    region = opts.get("region", "de")
-    interval = int(opts.get("interval", 180))
-    webhook = opts.get("webhook_url")
-    clear_after = opts.get("clear_after_import", True)
-    debug = opts.get("debug", False)
-
-    log(f"Running Alexa Importer (region={region}, interval={interval}s)")
+def poll_loop():
+    interval = int(os.getenv("INTERVAL", "180"))
+    clear_after = os.getenv("CLEAR_AFTER_IMPORT", "false").lower() == "true"
 
     while True:
-        log("Polling Alexa list… (Dummy)")
+        print(f"[INFO] Polling läuft... (Addon {os.getenv('ADDON_VERSION')})")
 
-        items = ["Test 1", "Test 2"]
+        # Hier später echte Amazon-API-Abfragen einbauen
+        dummy_list = ["Testeintrag 1", "Testeintrag 2"]
 
-        if webhook:
-            requests.post(webhook, json={"items": items})
+        send_webhook({"items": dummy_list})
+
+        if clear_after:
+            print("[INFO] Würde Amazon-Liste leeren (noch nicht implementiert).")
 
         time.sleep(interval)
 
-if __name__ == "__main__":
-    main()
+print("[INFO] Starte Polling...")
+poll_loop()
