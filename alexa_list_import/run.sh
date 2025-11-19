@@ -2,31 +2,33 @@
 
 echo "[run.sh] Alexa List Import starting..."
 
-# Dynamisch Version aus config.yaml lesen
-ADDON_VERSION=$(grep '^version:' /etc/hassio/addons/data/*/config.yaml | head -n 1 | awk '{print $2}' | tr -d '"')
+# Version sicher aus options.json
+ADDON_VERSION=$(python3 - << 'EOF'
+import json
+try:
+    with open("/data/options.json") as f:
+        opts = json.load(f)
+        print(opts.get("addon_version", "1.0.0"))
+except:
+    print("1.0.0")
+EOF
+)
 
-echo "[run.sh] Version: ${ADDON_VERSION}"
+echo "[run.sh] Version: $ADDON_VERSION"
 
 echo "[run.sh] Reading options from /data/options.json"
 
-# options.json laden
 python3 - << 'EOF'
 import json
-import sys
 
-try:
-    with open("/data/options.json", "r") as f:
-        opts = json.load(f)
-except Exception as e:
-    print("[run.sh] ERROR reading options.json:", e)
-    sys.exit(1)
+with open("/data/options.json", "r") as f:
+    opts = json.load(f)
 
-for k, v in opts.items():
+for k,v in opts.items():
     if "password" in k:
         print(f"[run.sh]   {k}= ********")
     else:
         print(f"[run.sh]   {k}= {v}")
-
 EOF
 
 echo "[run.sh] Starting app.py"
