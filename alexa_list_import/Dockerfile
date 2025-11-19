@@ -1,12 +1,9 @@
-ARG BUILD_FROM=ghcr.io/home-assistant/amd64-base:latest
-FROM ${BUILD_FROM}
+FROM python:3.12-alpine
 
-RUN apk add --no-cache python3 py3-pip bash
-RUN pip3 install requests pyyaml
+RUN apk add --no-cache bash curl jq
 
 WORKDIR /app
-COPY run.sh /app/run.sh
-COPY app.py /app/app.py
+COPY run.sh app.py /app/
 
 RUN chmod +x /app/run.sh
 
