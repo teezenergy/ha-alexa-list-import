@@ -1,5 +1,5 @@
 name: "Alexa List Import"
-version: "1.0.3"
+version: "1.0.4"
 slug: "alexa_list_import"
 description: "Imports Alexa shopping list into Home Assistant."
 arch:
