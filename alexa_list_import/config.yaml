@@ -1,6 +1,6 @@
 name: "Alexa List Import"
 version: "1.0.4"
-slug: "alexa_list_import"
+slug: "ha-alexa_list_import"
 description: "Importiert die Alexa Einkaufsliste automatisch in Home Assistant"
 startup: services
 boot: auto
