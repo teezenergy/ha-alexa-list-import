@@ -1,10 +1,11 @@
 import time
-import requests
 import json
 import pytz
+import requests
+import yaml
 
-print("[app.py] Alexa List Import running...")
+print("app.py started!")
 
 while True:
-    print("[app.py] Polling Alexa lists...")
-    time.sleep(60)
+    print("Polling Alexa list… (placeholder)")
+    time.sleep(10)
