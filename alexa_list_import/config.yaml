@@ -1,12 +1,10 @@
 name: "Alexa List Import"
-version: "1.0.4"
 slug: "alexa_list_import"
-url: "https://github.com/teezenergy/ha-alexa-list-import"
-description: "Importiert die Alexa Einkaufsliste automatisch in Home Assistant"
+description: "Importiert Alexa Einkaufslisten automatisch in Home Assistant"
+version: "1.0.4"
 startup: services
 boot: auto
-host_network: false
-
+host_network: true
 options:
   amazon_email: ""
   amazon_password: ""
@@ -16,11 +14,10 @@ options:
   interval: 180
   clear_after_import: true
   debug: false
-
 schema:
   amazon_email: str
   amazon_password: password
-  amazon_2fa: password
+  amazon_2fa: str
   region: str
   webhook_url: str
   interval: int
