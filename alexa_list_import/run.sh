@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 echo "[run.sh] Alexa List Import starting..."
 
-# Version aus config.yaml lesen
-ADDON_VERSION=$(grep -oP 'version:\s*"\K[^"]+' /etc/hassio/addons/data/*/config.yaml 2>/dev/null)
+ADDON_VERSION=$(grep -oP 'version:\s*"\K[^"]+' /data/addon_config.yaml 2>/dev/null)
 echo "[run.sh] Version: ${ADDON_VERSION}"
 
 echo "[run.sh] Reading options from /data/options.json"
@@ -24,7 +23,6 @@ echo "[run.sh]   webhook_url= ${WEBHOOK}"
 echo "[run.sh]   interval= ${INTERVAL}"
 echo "[run.sh]   clear_after_import= ${CLEAR_AFTER}"
 echo "[run.sh]   debug= ${DEBUG}"
-echo "[run.sh]   addon_version= ${ADDON_VERSION}"
 
 echo "[run.sh] Starting app.py"
 
