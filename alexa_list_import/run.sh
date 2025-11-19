@@ -12,8 +12,7 @@ INTERVAL=$(jq -r '.polling_interval' $CONFIG_PATH)
 CLEAR=$(jq -r '.clear_after_import' $CONFIG_PATH)
 
 echo "Starting Alexa List Import Add-on..."
-echo "Region: $REGION"
-echo "Polling every $INTERVAL seconds"
+echo "Region: $REGION, polling: $INTERVAL sec"
 
 python3 /app/app.py \
   --email "$EMAIL" \
