@@ -3,16 +3,14 @@ set -e
 
 echo "[run.sh] Alexa List Import starting..."
 
-# Version lesen
+# Version laden
 VERSION=$(grep -E "^version:" /etc/hassio/addons/data/*/config.yaml 2>/dev/null | awk '{print $2}')
 echo "[run.sh] Version: ${VERSION}"
 
 echo "[run.sh] Reading options from /data/options.json"
 
-# Optionen einlesen
 OPTS=$(cat /data/options.json)
 
-# Variablen parsen
 AMAZON_EMAIL=$(echo "$OPTS" | jq -r '.amazon_email')
 AMAZON_PASSWORD=$(echo "$OPTS" | jq -r '.amazon_password')
 AMAZON_2FA=$(echo "$OPTS" | jq -r '.amazon_2fa')
@@ -22,7 +20,6 @@ INTERVAL=$(echo "$OPTS" | jq -r '.interval')
 CLEAR=$(echo "$OPTS" | jq -r '.clear_after_import')
 DEBUG=$(echo "$OPTS" | jq -r '.debug')
 
-# Ausgabe (Passwort verdeckt)
 echo "[run.sh]   amazon_email= ${AMAZON_EMAIL}"
 echo "[run.sh]   amazon_password= ********"
 echo "[run.sh]   amazon_2fa= ${AMAZON_2FA}"
@@ -31,9 +28,8 @@ echo "[run.sh]   webhook_url= ${WEBHOOK}"
 echo "[run.sh]   interval= ${INTERVAL}"
 echo "[run.sh]   clear_after_import= ${CLEAR}"
 echo "[run.sh]   debug= ${DEBUG}"
-echo "[run.sh]   addon_version= ${VERSION}"
 
-# Variablen exportieren
+# Variablen Exportieren
 export AMAZON_EMAIL="${AMAZON_EMAIL}"
 export AMAZON_PASSWORD="${AMAZON_PASSWORD}"
 export AMAZON_2FA="${AMAZON_2FA}"
