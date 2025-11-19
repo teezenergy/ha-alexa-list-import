@@ -3,31 +3,25 @@ version: "1.0.0"
 slug: "alexa_list_import"
 description: "Imports Alexa shopping list into Home Assistant"
 url: "https://github.com/teezenergy/ha-alexa-list-import"
-
-# Add-on boot sequence
 startup: services
 boot: auto
 init: false
-stage: experimental
-
-# Add-on capabilities
 arch:
-  - armhf
-  - armv7
-  - aarch64
   - amd64
+  - aarch64
+  - armv7
+  - armhf
   - i386
 
-# required for startup: services
-services:
-  - mysql:need  # dummy service to satisfy the supervisor
+# Home Assistant baut das Add-on selbst aus deinem Dockerfile
+build_from:
+  amd64: "Dockerfile"
+  aarch64: "Dockerfile"
+  armv7: "Dockerfile"
+  armhf: "Dockerfile"
+  i386: "Dockerfile"
 
-host_network: false
 ports: {}
-
 map: []
 options: {}
 schema: {}
-
-# The add-on will be built locally from Dockerfile
-image: null
