@@ -1,6 +1,6 @@
 name: "Alexa List Import"
-version: "1.0.6"
-slug: alexa_list_import
+version: "1.0.0"
+slug: "alexa_list_import"
 description: "Imports Alexa shopping list into Home Assistant"
 url: "https://github.com/teezenergy/ha-alexa-list-import"
 startup: services
@@ -12,13 +12,6 @@ arch:
   - armv7
   - armhf
   - i386
-
-build_from:
-  amd64: "Dockerfile"
-  aarch64: "Dockerfile"
-  armv7: "Dockerfile"
-  armhf: "Dockerfile"
-  i386: "Dockerfile"
 
 options:
   amazon_email: ""
