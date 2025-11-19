@@ -1,29 +1,33 @@
 name: "Alexa List Import"
-slug: alexa_list_import
-description: "Importiert Alexa Einkaufslisten automatisch in Home Assistant"
-version: "1.0.4"
+version: "1.0.0"
+slug: "alexa_list_import"
+description: "Imports Alexa shopping list into Home Assistant"
+url: "https://github.com/teezenergy/ha-alexa-list-import"
+
+# Add-on boot sequence
 startup: services
 boot: auto
-host_network: true
+init: false
+stage: experimental
 
-options:
-  amazon_email: ""
-  amazon_password: ""
-  amazon_2fa: ""
-  region: "de"
-  webhook_url: ""
-  interval: 180
-  clear_after_import: true
-  debug: false
+# Add-on capabilities
+arch:
+  - armhf
+  - armv7
+  - aarch64
+  - amd64
+  - i386
 
-schema:
-  amazon_email: str
-  amazon_password: password
-  amazon_2fa: str
-  region: str
-  webhook_url: str
-  interval: int
-  clear_after_import: bool
-  debug: bool
+# required for startup: services
+services:
+  - mysql:need  # dummy service to satisfy the supervisor
 
-image: "local/alexa_list_import"
+host_network: false
+ports: {}
+
+map: []
+options: {}
+schema: {}
+
+# The add-on will be built locally from Dockerfile
+image: null
