@@ -1,5 +1,5 @@
 name: "Alexa List Import"
-version: "1.0.4"
+version: "1.0.3"
 slug: "alexa_list_import"
 description: "Imports Alexa shopping list into Home Assistant."
 arch:
@@ -10,6 +10,10 @@ arch:
   - i386
 startup: application
 boot: auto
+
+build:
+  dockerfile: Dockerfile
+
 options:
   amazon_email: ""
   amazon_password: ""
@@ -19,6 +23,7 @@ options:
   interval: 180
   clear_after_import: true
   debug: false
+
 schema:
   amazon_email: str
   amazon_password: password
