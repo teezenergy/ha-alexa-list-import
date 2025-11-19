@@ -1,19 +1,12 @@
 name: "Alexa List Import"
-version: "1.0.6"
+version: "1.0.0"
 slug: "alexa_list_import"
-description: "Imports Alexa shopping list into Home Assistant."
+description: "Imports Alexa shopping list into Home Assistant via webhook."
 arch:
   - amd64
   - aarch64
-  - armv7
-  - armhf
-  - i386
 startup: application
 boot: auto
-
-build:
-  dockerfile: Dockerfile
-
 options:
   amazon_email: ""
   amazon_password: ""
@@ -22,8 +15,7 @@ options:
   webhook_url: ""
   interval: 180
   clear_after_import: true
-  debug: false
-
+  debug: true
 schema:
   amazon_email: str
   amazon_password: password
