@@ -1,5 +1,5 @@
 name: "Alexa List Import"
-version: "1.0.2"
+version: "1.0.0"
 slug: "alexa_list_import"
 description: "Imports Alexa shopping list into Home Assistant"
 url: "https://github.com/teezenergy/ha-alexa-list-import"
@@ -17,16 +17,18 @@ options:
   amazon_email: ""
   amazon_password: ""
   amazon_2fa: ""
-  amazon_region: "de"   # de / com / co.uk / fr / it / es
+  region: "de"
   webhook_url: ""
-  polling_interval: 60  # seconds
-  clear_after_import: false
+  interval: 180
+  clear_after_import: true
+  debug: true
 
 schema:
   amazon_email: str
-  amazon_password: password
-  amazon_2fa: str?
-  amazon_region: str
-  webhook_url: str?
-  polling_interval: int
+  amazon_password: str
+  amazon_2fa: str
+  region: str
+  webhook_url: str
+  interval: int
   clear_after_import: bool
+  debug: bool
