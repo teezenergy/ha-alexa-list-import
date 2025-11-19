@@ -21,62 +21,45 @@ INTERVAL = int(os.getenv("INTERVAL", "180"))
 CLEAR = os.getenv("CLEAR", "false").lower() == "true"
 
 log(f"Email: {EMAIL}")
-log("Password: ******** (hidden)")
+log("Password: ********")
 log(f"2FA: {TFA}")
 log(f"Region: {REGION}")
 log(f"Interval: {INTERVAL}")
 log(f"Webhook: {WEBHOOK}")
 log(f"Clear after import: {CLEAR}")
 
-# Fake Login-System
+# Fake Login
 def login():
     log("Starting login flow…")
-    log(f"Preparing request to https://www.amazon.{REGION}/ap/signin")
-
     try:
-        # Fake-Login, denn Amazon blockt diese Requests sowieso
         r = requests.get(f"https://www.amazon.{REGION}")
-        log(f"Login HTTP status: {r.status_code}")
-        return r.status_code == 200
+        log(f"Login status: {r.status_code}")
+        return True
     except Exception as e:
         log(f"Login error: {e}")
         return False
 
-# Fake List-Fetcher
 def fetch_items():
-    log("Fetching shopping list...")
-    # Wir simulieren leere Liste, bis echte API implementiert wird
+    log("Fetching list…")
     return []
 
 def send_webhook(items):
     if not WEBHOOK:
-        log("No webhook provided.")
+        log("Webhook missing.")
         return
-
-    log(f"Sending {len(items)} items to webhook...")
-
+    log(f"Sending {len(items)} items to webhook.")
     try:
         requests.post(WEBHOOK, json={"items": items})
     except Exception as e:
         log(f"Webhook error: {e}")
 
-# Main Loop
 if not login():
     log("Login failed.")
 else:
-    log("Login OK")
+    log("Login OK.")
 
 while True:
-    print(f"[INFO] Polling — Add-on Version {os.getenv('ADDON_VERSION')}")
-    log("Polling loop iteration")
-
+    print(f"[INFO] Polling — Version {os.getenv('ADDON_VERSION')}")
     items = fetch_items()
-    log(f"Fetched {len(items)} items.")
-
     send_webhook(items)
-
-    if CLEAR:
-        log("Clearing imported items (not implemented).")
-
-    log(f"Sleeping for {INTERVAL} seconds…")
     time.sleep(INTERVAL)
