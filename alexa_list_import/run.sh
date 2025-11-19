@@ -1,35 +1,34 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 echo "[run.sh] Alexa List Import starting..."
 
-# Version sicher aus options.json
-ADDON_VERSION=$(python3 - << 'EOF'
-import json
-try:
-    with open("/data/options.json") as f:
-        opts = json.load(f)
-        print(opts.get("addon_version", "1.0.0"))
-except:
-    print("1.0.0")
-EOF
-)
-
-echo "[run.sh] Version: $ADDON_VERSION"
+# Read version from config.yaml
+ADDON_VERSION=$(grep -R "version:" /etc/hassio/addons/data/*/config.yaml 2>/dev/null | head -n1 | awk '{print $2}')
+echo "[run.sh] Version: ${ADDON_VERSION}"
 
 echo "[run.sh] Reading options from /data/options.json"
 
-python3 - << 'EOF'
-import json
+EMAIL=$(jq -r '.amazon_email' /data/options.json)
+PASSWORD="********"
+TWOFA=$(jq -r '.amazon_2fa' /data/options.json)
+REGION=$(jq -r '.region' /data/options.json)
+WEBHOOK=$(jq -r '.webhook_url' /data/options.json)
+INTERVAL=$(jq -r '.interval' /data/options.json)
+CLEAR=$(jq -r '.clear_after_import' /data/options.json)
+DEBUG=$(jq -r '.debug' /data/options.json)
 
-with open("/data/options.json", "r") as f:
-    opts = json.load(f)
-
-for k,v in opts.items():
-    if "password" in k:
-        print(f"[run.sh]   {k}= ********")
-    else:
-        print(f"[run.sh]   {k}= {v}")
-EOF
+echo "[run.sh]   amazon_email= $EMAIL"
+echo "[run.sh]   amazon_password= ********"
+echo "[run.sh]   amazon_2fa= $TWOFA"
+echo "[run.sh]   region= $REGION"
+echo "[run.sh]   webhook_url= $WEBHOOK"
+echo "[run.sh]   interval= $INTERVAL"
+echo "[run.sh]   clear_after_import= $CLEAR"
+echo "[run.sh]   debug= $DEBUG"
+echo "[run.sh]   addon_version= $ADDON_VERSION"
 
 echo "[run.sh] Starting app.py"
-exec python3 /app/app.py
+
+export ADDON_VERSION
+
+python3 /app/app.py
