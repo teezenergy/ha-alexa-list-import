@@ -1,19 +1,18 @@
-FROM python:3.12-alpine
+ARG BUILD_FROM=ghcr.io/home-assistant/amd64-base:latest
+FROM ${BUILD_FROM}
 
-RUN apk add --no-cache bash curl jq
+# Install Python + pip
+RUN apk add --no-cache python3 py3-pip bash
 
-# Python dependencies
-RUN pip install --no-cache-dir \
-    requests \
-    pyyaml \
-    flask \
-    boto3
+# Install Python modules
+RUN pip3 install requests pyyaml
+
+# Create app dir
+WORKDIR /app
 
 COPY run.sh /app/run.sh
 COPY app.py /app/app.py
 
 RUN chmod +x /app/run.sh
-
-WORKDIR /app
 
 CMD ["/app/run.sh"]
