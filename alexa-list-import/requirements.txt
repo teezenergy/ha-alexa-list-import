@@ -1,5 +1,0 @@
-pyyaml
-requests
-pytz
-beautifulsoup4
-lxml
