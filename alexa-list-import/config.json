@@ -1,0 +1,39 @@
+{
+  "name": "Alexa List Import",
+  "version": "2.0.20",
+  "slug": "alexa_list_import",
+  "description": "Imports the Alexa shopping list into Home Assistant",
+  "url": "https://github.com/teezenergy/ha-alexa-list-import",
+  "arch": [
+    "amd64",
+    "aarch64",
+    "armv7",
+    "armhf",
+    "i386"
+  ],
+  "startup": "services",
+  "boot": "auto",
+  "init": false,
+
+  "options": {
+    "Amazon E-mail": "",
+    "Amazon Password": "",
+    "Amazon 2FA": "",
+    "Region": "de",
+    "Webhook URL": "",
+    "Polling Interval": 180,
+    "Clear after import": true,
+    "Debug": false
+  },
+
+  "schema": {
+    "Amazon E-mail": "str",
+    "Amazon Password": "password",
+    "Amazon 2FA": "password",
+    "Region": "str",
+    "Webhook URL": "str",
+    "Polling Interval": "int",
+    "Clear after import": "bool",
+    "Debug": "bool"
+  }
+}
